@@ -58,6 +58,7 @@ class GameViewController: UIViewController {
                 levelTimer = Timer.scheduledTimer(timeInterval: 0.3, target: self, selector: #selector(handleLevel), userInfo: nil, repeats: true)
                 break
             case .isEnded:
+
                 break
             case .isPaused:
                 break
@@ -225,29 +226,43 @@ extension GameViewController : SCNSceneRendererDelegate{
     func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
         //handle despawn / lose / score here
         
+        //Looping through all the nodes current in the gameScene
         for child in gameScene.rootNode.childNodes{
             
             //handle despawn
             if(child.geometry?.name == "RED" || child.geometry?.name == "BLUE"){
                 //BLUE SECTOR of map
                 if(child.presentation.position.y <= -6 && child.presentation.position.z >= -10){
+                    
+                    //If RED falls in BLUE SECTOR -> LOSE
+                    
+                    if(child.geometry?.name=="RED"){
+                        state = .isEnded
+                    }
+                    
                     //bottom of camera position
-                    //despawning if any child is less than y -10
+                    //despawning if any child is less than y -6
                     child.removeFromParentNode()
-                    print(time)
                 }
                 //RED SECTOR of map
-                
+                if(child.presentation.position.y <= -50 && child.presentation.position.z <= -30){
+                    
+                    //If BLUE falls in RED SECTOR -> LOSE
+                    
+                    if(child.geometry?.name=="BLUE"){
+                        state = .isEnded
+                    }
+                    
+                    //bottom of camera position
+                    //despawning if any child is less than y -50
+                    child.removeFromParentNode()
+                }
                 
             }
             
-            //handle lose
+            
             
             
         }
-        
-        
-        
-        
     }
 }
