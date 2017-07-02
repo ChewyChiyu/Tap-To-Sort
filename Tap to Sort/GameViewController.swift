@@ -9,6 +9,8 @@
 import UIKit
 import QuartzCore
 import SceneKit
+import SpriteKit
+
 
 enum gameState{
     case isPlaying, isPaused, isLaunched, isEnded
@@ -18,6 +20,22 @@ class GameViewController: UIViewController {
     var gameView : SCNView!
     var gameScene : SCNScene!
     
+    
+    //score and score label
+    
+    var score = 0{
+        didSet{
+            //update label
+            if let label = scoreLabel{
+                label.text = String(score)
+            }
+        }
+    }
+    //score label
+    var scoreLabel: SKLabelNode!
+    
+    //overlay bar
+    var overLayBar : SKSpriteNode!
     
     //Timer for spawning in game objects
     var spawnTimer: Timer!
@@ -50,20 +68,115 @@ class GameViewController: UIViewController {
             // handle game state events
             switch(state){
             case .isLaunched:
+                //loading in overlay
+                loadInOverlay()
+                //animate overlay
+                overLayBar.run(SKAction.moveBy(x: 0, y: -100, duration: 1))
                 break
             case .isPlaying:
                 //starting spawn timer
                 spawnTimer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(spawnBlocks), userInfo: nil, repeats: true)
                 //starting level timer
-                levelTimer = Timer.scheduledTimer(timeInterval: 0.3, target: self, selector: #selector(handleLevel), userInfo: nil, repeats: true)
+                levelTimer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(handleLevel), userInfo: nil, repeats: true)
+                
                 break
             case .isEnded:
-
+                //animate end sequence
+                //first move score label off screen
+                
+                //stopping timers
+                levelTimer.invalidate()
+                spawnTimer.invalidate()
+                
+                overLayBar.run(SKAction.move(to: CGPoint(x:0,y:500), duration: 1), completion: {
+                    
+                    //apply reset menu overlay
+                    let resetMenu = SKScene(fileNamed: "RestartMenuOverlay.sks")
+                    self.gameView.overlaySKScene = resetMenu
+                    self.gameView.overlaySKScene?.isUserInteractionEnabled = true // user interaction needed
+                    
+                    //assign nodes to var
+                    let reset = resetMenu?.childNode(withName: "RestartMenu")
+                    let resetLabel = reset?.childNode(withName: "Score") as? SKLabelNode
+                    let resetButton = reset?.childNode(withName: "ResetButton") as? Button
+                    let exitButton = reset?.childNode(withName: "ExitButton") as? Button
+                    let highscoreLabel = reset?.childNode(withName: "Highscore") as! SKLabelNode
+                    let highscoreButton  = reset?.childNode(withName: "HighscoreButton") as? Button
+                    
+                    //apply current score on resetLabel
+                    resetLabel?.text = String(self.score)
+                    
+                    
+                    //highscore config retreive from user defaults and compare / assign
+                    //manage highscores
+                    if let s = UserDefaults.standard.value(forKey: "highscore") {
+                        if(self.score > (s as? Int)!){
+                            UserDefaults.standard.set(self.score, forKey: "highscore")
+                        }
+                    } else {
+                        //user default does not exist yet so set highscore to current rounds score
+                        UserDefaults.standard.set(self.score, forKey: "highscore")
+                        
+                    }
+                    //get highscore again and place on highscore label
+                    let highscore = (UserDefaults.standard.value(forKey: "highscore") as? Int)!
+                    highscoreLabel.text = String(highscore)
+                    
+                    
+                    
+                    //animate resetMenuOverlay
+                    reset?.run(SKAction.move(to: CGPoint(x:0,y:0), duration: 1), completion: {
+                        //reset button action
+                        resetButton?.playAction = {
+                            //move reset menu off screen
+                            reset?.run(SKAction.move(to: CGPoint(x:0,y:500), duration: 1), completion: {
+                                //restarting scores
+                                self.score = 0
+                                self.currentLevel = 0
+                                //clearing all red and blue nodes on screen
+                                for child in self.gameScene.rootNode.childNodes{
+                                    if(child.geometry?.name == "RED" || child.geometry?.name == "BLUE" ){
+                                        child.removeFromParentNode()
+                                    }
+                                }
+                                //reseting game state
+                                self.state =  .isLaunched
+                            })
+                        }
+                        //exit button action
+                        exitButton?.playAction = {
+                            //move to menu view controller
+                            let newRootViewController = self.view?.window?.rootViewController!.storyboard!.instantiateViewController(withIdentifier: "MenuViewController")
+                            UIApplication.shared.keyWindow!.replaceRootViewControllerWith(newRootViewController!, animated: true, completion: nil)
+                        }
+                        //highscore button action
+                        highscoreButton?.playAction = {
+                            //transit from game to highscore view
+                            let newRootViewController = self.view?.window?.rootViewController!.storyboard!.instantiateViewController(withIdentifier: "HighscoreViewController")
+                            UIApplication.shared.keyWindow!.replaceRootViewControllerWith(newRootViewController!, animated: true, completion: nil)
+                        }
+                        
+                    })
+                })
+                
                 break
             case .isPaused:
                 break
             }
         }
+    }
+    
+    //load in overlay
+    func loadInOverlay(){
+        //get overlay for game, Sprite Kit
+        let overLay = SKScene(fileNamed: "GamePlayOverlay.sks")
+        //apply overLay on gameScene
+        gameView.overlaySKScene = overLay
+        //turn off user interaction
+        gameView.overlaySKScene?.isUserInteractionEnabled = false
+        //assign nodes from overlay to self
+        overLayBar = (overLay?.childNode(withName: "OverlayBar") as? SKSpriteNode)!
+        scoreLabel = (overLayBar?.childNode(withName: "Score") as? SKLabelNode)!
     }
     
     //method that increment level of game
@@ -89,7 +202,7 @@ class GameViewController: UIViewController {
                 shape = SCNCone(topRadius: 1, bottomRadius: 0, height: 1)
                 break
             case 2:
-                shape = SCNTorus(ringRadius: 1, pipeRadius: 0.5)
+                shape = SCNPyramid(width: 1, height: 1, length: 1)
                 break
             case 3:
                 shape = SCNSphere(radius: 0.5)
@@ -103,22 +216,29 @@ class GameViewController: UIViewController {
                 break
             }
             
+            //custom material
+            let material = SCNMaterial()
             
             //assigning color / name to ndoe
-            switch(arc4random_uniform(2)){
+            switch(arc4random_uniform(4)){   // 1 in 4 chance of red
             case 0:
                 //red color
                 shape?.materials.first?.diffuse.contents = UIColor(colorLiteralRed: 249/255, green: 101/255, blue: 94/255, alpha: 1)
                 shape?.name = "RED"
+                //custom red material
+                material.diffuse.contents = UIImage(named: "RedMaterial.png")
                 break
-            case 1:
+            default:
                 //blue color
                 shape?.materials.first?.diffuse.contents = UIColor(colorLiteralRed: 94/255, green: 178/255, blue: 249/255, alpha: 1)
                 shape?.name = "BLUE"
-                break
-            default:
+                material.diffuse.contents = UIImage(named: "BlueMaterial.png")
                 break
             }
+            
+            //applying custom material over shape geometry
+            shape?.firstMaterial = material
+            
             
             //assigning geometry to a node
             let shapeNode = SCNNode(geometry: shape)
@@ -164,26 +284,38 @@ class GameViewController: UIViewController {
         
         
         //assigning physics to the walls
-        let rightWall = gameScene.rootNode.childNode(withName: "wallRight", recursively: true)
-        let leftWall = gameScene.rootNode.childNode(withName: "wallLeft", recursively: true)
+        let rightWallBlue = gameScene.rootNode.childNode(withName: "blueWallRight", recursively: true)
+        let leftWallBlue = gameScene.rootNode.childNode(withName: "blueWallLeft", recursively: true)
+        let rightWallRed = gameScene.rootNode.childNode(withName: "redWallRight", recursively: true)
+        let leftWallRed = gameScene.rootNode.childNode(withName: "redWallLeft", recursively: true)
         
-        rightWall?.physicsBody = SCNPhysicsBody(type: .static, shape: SCNPhysicsShape(geometry: SCNBox(width: 1, height: 100, length: 100, chamferRadius: 0)  , options: nil))
+        rightWallBlue?.physicsBody = SCNPhysicsBody(type: .static, shape: SCNPhysicsShape(geometry: SCNBox(width: 1, height: 100, length: 100, chamferRadius: 0)  , options: nil))
         
-        leftWall?.physicsBody = SCNPhysicsBody(type: .static, shape: SCNPhysicsShape(geometry: SCNBox(width: 1, height: 100, length: 100, chamferRadius: 0)  , options: nil))
+        leftWallBlue?.physicsBody = SCNPhysicsBody(type: .static, shape: SCNPhysicsShape(geometry: SCNBox(width: 1, height: 100, length: 100, chamferRadius: 0)  , options: nil))
+        
+        //applying custom material to walls
+        let materialRed = SCNMaterial()
+        materialRed.diffuse.contents = UIImage(named: "RedMaterial")
+        rightWallRed?.geometry?.materials = [materialRed]
+        leftWallRed?.geometry?.materials = [materialRed]
+        
+        let materialBlue = SCNMaterial()
+        materialBlue.diffuse.contents = UIImage(named: "BlueMaterial")
+        rightWallBlue?.geometry?.materials = [materialBlue]
+        leftWallBlue?.geometry?.materials = [materialBlue]
         
         
-        //handle tap gesture
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
-        gameView.addGestureRecognizer(tapGesture)
+        
         
         //handle render , self
         gameView.delegate = self
-    }
-    
-    
-    func handleTap(_ gestureRecognize: UIGestureRecognizer) {
+        
+        //setting game state to launch
+        state = .isLaunched
         
     }
+    
+    
     
     //handling touches in game
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -195,7 +327,18 @@ class GameViewController: UIViewController {
         if(state == .isPlaying){
             //hit test
             let nodeTouched = gameView.hitTest((touches.first?.location(in: gameView))!, options: nil).first
-            nodeTouched?.node.physicsBody?.applyForce(SCNVector3(0,0,-10), asImpulse: true)
+            nodeTouched?.node.physicsBody?.applyForce(SCNVector3(0,0,-4), asImpulse: true)
+            
+            //lose / point handle
+            if(nodeTouched?.node.geometry?.name == "RED"){
+                //Yes sort correct, increment score
+                score+=1
+            }
+            if(nodeTouched?.node.geometry?.name == "BLUE"){
+                //No sort incorrect, lose
+                state = .isEnded
+            }
+            
         }
         
     }
@@ -221,6 +364,8 @@ class GameViewController: UIViewController {
     }
     
 }
+
+
 extension GameViewController : SCNSceneRendererDelegate{
     
     func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
@@ -232,7 +377,7 @@ extension GameViewController : SCNSceneRendererDelegate{
             //handle despawn
             if(child.geometry?.name == "RED" || child.geometry?.name == "BLUE"){
                 //BLUE SECTOR of map
-                if(child.presentation.position.y <= -6 && child.presentation.position.z >= -10){
+                if(child.presentation.position.y <= -6 && child.presentation.position.z >= -5){
                     
                     //If RED falls in BLUE SECTOR -> LOSE
                     
@@ -252,7 +397,6 @@ extension GameViewController : SCNSceneRendererDelegate{
                     if(child.geometry?.name=="BLUE"){
                         state = .isEnded
                     }
-                    
                     //bottom of camera position
                     //despawning if any child is less than y -50
                     child.removeFromParentNode()

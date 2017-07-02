@@ -18,8 +18,12 @@
 		2005CC311F085569002EF0AA /* MenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2005CC301F085569002EF0AA /* MenuViewController.swift */; };
 		2005CC351F0856C5002EF0AA /* Menu.sks in Resources */ = {isa = PBXBuildFile; fileRef = 2005CC341F0856C5002EF0AA /* Menu.sks */; };
 		2005CC381F085711002EF0AA /* Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2005CC371F085711002EF0AA /* Menu.swift */; };
+		20B262D41F09BC07004DE39A /* HighscoreViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20B262D31F09BC07004DE39A /* HighscoreViewController.swift */; };
 		20CFFAF81F085F3D008AF3F7 /* Button.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20CFFAF71F085F3D008AF3F7 /* Button.swift */; };
 		20CFFAFF1F0877C8008AF3F7 /* MapAlpha.scn in Resources */ = {isa = PBXBuildFile; fileRef = 20CFFAFE1F0877C8008AF3F7 /* MapAlpha.scn */; };
+		20F904271F08C28F00DF1305 /* GamePlayOverlay.sks in Resources */ = {isa = PBXBuildFile; fileRef = 20F904261F08C28F00DF1305 /* GamePlayOverlay.sks */; };
+		20F9042B1F08D90F00DF1305 /* RestartMenuOverlay.sks in Resources */ = {isa = PBXBuildFile; fileRef = 20F9042A1F08D90F00DF1305 /* RestartMenuOverlay.sks */; };
+		20F9042D1F08E97000DF1305 /* Extentions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20F9042C1F08E97000DF1305 /* Extentions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,8 +61,12 @@
 		2005CC301F085569002EF0AA /* MenuViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuViewController.swift; sourceTree = "<group>"; };
 		2005CC341F0856C5002EF0AA /* Menu.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = Menu.sks; sourceTree = "<group>"; };
 		2005CC371F085711002EF0AA /* Menu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Menu.swift; sourceTree = "<group>"; };
+		20B262D31F09BC07004DE39A /* HighscoreViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HighscoreViewController.swift; sourceTree = "<group>"; };
 		20CFFAF71F085F3D008AF3F7 /* Button.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Button.swift; sourceTree = "<group>"; };
 		20CFFAFE1F0877C8008AF3F7 /* MapAlpha.scn */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = MapAlpha.scn; sourceTree = "<group>"; };
+		20F904261F08C28F00DF1305 /* GamePlayOverlay.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GamePlayOverlay.sks; sourceTree = "<group>"; };
+		20F9042A1F08D90F00DF1305 /* RestartMenuOverlay.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = RestartMenuOverlay.sks; sourceTree = "<group>"; };
+		20F9042C1F08E97000DF1305 /* Extentions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extentions.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -144,6 +152,7 @@
 			children = (
 				2005CC0A1F08545C002EF0AA /* LaunchScreen.storyboard */,
 				2005CC051F08545C002EF0AA /* Main.storyboard */,
+				20B262D31F09BC07004DE39A /* HighscoreViewController.swift */,
 				2005CC031F08545C002EF0AA /* GameViewController.swift */,
 				2005CC301F085569002EF0AA /* MenuViewController.swift */,
 			);
@@ -156,6 +165,8 @@
 			children = (
 				2005CC341F0856C5002EF0AA /* Menu.sks */,
 				2005CC371F085711002EF0AA /* Menu.swift */,
+				20F904261F08C28F00DF1305 /* GamePlayOverlay.sks */,
+				20F9042A1F08D90F00DF1305 /* RestartMenuOverlay.sks */,
 			);
 			name = "Sprite Kit ";
 			path = "Tap to Sort";
@@ -165,6 +176,7 @@
 			isa = PBXGroup;
 			children = (
 				20CFFAF71F085F3D008AF3F7 /* Button.swift */,
+				20F9042C1F08E97000DF1305 /* Extentions.swift */,
 			);
 			name = Utilities;
 			path = "Tap to Sort";
@@ -290,10 +302,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				20CFFAFF1F0877C8008AF3F7 /* MapAlpha.scn in Resources */,
+				20F9042B1F08D90F00DF1305 /* RestartMenuOverlay.sks in Resources */,
 				2005CC021F08545C002EF0AA /* art.scnassets in Resources */,
 				2005CC0C1F08545C002EF0AA /* LaunchScreen.storyboard in Resources */,
 				2005CC091F08545C002EF0AA /* Assets.xcassets in Resources */,
 				2005CC351F0856C5002EF0AA /* Menu.sks in Resources */,
+				20F904271F08C28F00DF1305 /* GamePlayOverlay.sks in Resources */,
 				2005CC071F08545C002EF0AA /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -321,9 +335,11 @@
 			files = (
 				20CFFAF81F085F3D008AF3F7 /* Button.swift in Sources */,
 				2005CC041F08545C002EF0AA /* GameViewController.swift in Sources */,
+				20F9042D1F08E97000DF1305 /* Extentions.swift in Sources */,
 				2005CC311F085569002EF0AA /* MenuViewController.swift in Sources */,
 				2005CC381F085711002EF0AA /* Menu.swift in Sources */,
 				2005CC001F08545C002EF0AA /* AppDelegate.swift in Sources */,
+				20B262D41F09BC07004DE39A /* HighscoreViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
