@@ -19,6 +19,8 @@
 		2005CC351F0856C5002EF0AA /* Menu.sks in Resources */ = {isa = PBXBuildFile; fileRef = 2005CC341F0856C5002EF0AA /* Menu.sks */; };
 		2005CC381F085711002EF0AA /* Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2005CC371F085711002EF0AA /* Menu.swift */; };
 		20B262D41F09BC07004DE39A /* HighscoreViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20B262D31F09BC07004DE39A /* HighscoreViewController.swift */; };
+		20B262D61F09C08D004DE39A /* Highscore.sks in Resources */ = {isa = PBXBuildFile; fileRef = 20B262D51F09C08D004DE39A /* Highscore.sks */; };
+		20B262D81F09C0AA004DE39A /* Highscore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20B262D71F09C0AA004DE39A /* Highscore.swift */; };
 		20CFFAF81F085F3D008AF3F7 /* Button.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20CFFAF71F085F3D008AF3F7 /* Button.swift */; };
 		20CFFAFF1F0877C8008AF3F7 /* MapAlpha.scn in Resources */ = {isa = PBXBuildFile; fileRef = 20CFFAFE1F0877C8008AF3F7 /* MapAlpha.scn */; };
 		20F904271F08C28F00DF1305 /* GamePlayOverlay.sks in Resources */ = {isa = PBXBuildFile; fileRef = 20F904261F08C28F00DF1305 /* GamePlayOverlay.sks */; };
@@ -62,6 +64,8 @@
 		2005CC341F0856C5002EF0AA /* Menu.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = Menu.sks; sourceTree = "<group>"; };
 		2005CC371F085711002EF0AA /* Menu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Menu.swift; sourceTree = "<group>"; };
 		20B262D31F09BC07004DE39A /* HighscoreViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HighscoreViewController.swift; sourceTree = "<group>"; };
+		20B262D51F09C08D004DE39A /* Highscore.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = Highscore.sks; sourceTree = "<group>"; };
+		20B262D71F09C0AA004DE39A /* Highscore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Highscore.swift; sourceTree = "<group>"; };
 		20CFFAF71F085F3D008AF3F7 /* Button.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Button.swift; sourceTree = "<group>"; };
 		20CFFAFE1F0877C8008AF3F7 /* MapAlpha.scn */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = MapAlpha.scn; sourceTree = "<group>"; };
 		20F904261F08C28F00DF1305 /* GamePlayOverlay.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GamePlayOverlay.sks; sourceTree = "<group>"; };
@@ -164,6 +168,8 @@
 			isa = PBXGroup;
 			children = (
 				2005CC341F0856C5002EF0AA /* Menu.sks */,
+				20B262D51F09C08D004DE39A /* Highscore.sks */,
+				20B262D71F09C0AA004DE39A /* Highscore.swift */,
 				2005CC371F085711002EF0AA /* Menu.swift */,
 				20F904261F08C28F00DF1305 /* GamePlayOverlay.sks */,
 				20F9042A1F08D90F00DF1305 /* RestartMenuOverlay.sks */,
@@ -308,6 +314,7 @@
 				2005CC091F08545C002EF0AA /* Assets.xcassets in Resources */,
 				2005CC351F0856C5002EF0AA /* Menu.sks in Resources */,
 				20F904271F08C28F00DF1305 /* GamePlayOverlay.sks in Resources */,
+				20B262D61F09C08D004DE39A /* Highscore.sks in Resources */,
 				2005CC071F08545C002EF0AA /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -339,6 +346,7 @@
 				2005CC311F085569002EF0AA /* MenuViewController.swift in Sources */,
 				2005CC381F085711002EF0AA /* Menu.swift in Sources */,
 				2005CC001F08545C002EF0AA /* AppDelegate.swift in Sources */,
+				20B262D81F09C0AA004DE39A /* Highscore.swift in Sources */,
 				20B262D41F09BC07004DE39A /* HighscoreViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

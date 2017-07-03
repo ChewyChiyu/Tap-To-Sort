@@ -44,7 +44,7 @@
         <!--Highscore View Controller-->
         <scene sceneID="wE8-Ql-zOZ">
             <objects>
-                <viewController storyboardIdentifier="HighscoreViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="LC1-hG-Qhf" customClass="HighscoreViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="HighscoreViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="LC1-hG-Qhf" customClass="HighscoreViewController" customModule="Tap_to_Sort" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="EMI-bv-C64"/>
                         <viewControllerLayoutGuide type="bottom" id="ne2-yv-DnS"/>

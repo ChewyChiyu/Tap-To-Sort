@@ -70,15 +70,20 @@ class GameViewController: UIViewController {
             case .isLaunched:
                 //loading in overlay
                 loadInOverlay()
+                
                 //animate overlay
-                overLayBar.run(SKAction.moveBy(x: 0, y: -100, duration: 1))
+                overLayBar.run(SKAction.moveBy(x: 0, y: -100, duration: 1), completion: {
+                    self.state = .isPlaying
+                })
                 break
             case .isPlaying:
                 //starting spawn timer
-                spawnTimer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(spawnBlocks), userInfo: nil, repeats: true)
-                //starting level timer
-                levelTimer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(handleLevel), userInfo: nil, repeats: true)
+                DispatchQueue.main.async{
+                self.spawnTimer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.spawnBlocks), userInfo: nil, repeats: true)
                 
+                //starting level timer
+                self.levelTimer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.handleLevel), userInfo: nil, repeats: true)
+                }
                 break
             case .isEnded:
                 //animate end sequence
@@ -125,40 +130,41 @@ class GameViewController: UIViewController {
                     
                     
                     //animate resetMenuOverlay
-                    reset?.run(SKAction.move(to: CGPoint(x:0,y:0), duration: 1), completion: {
-                        //reset button action
-                        resetButton?.playAction = {
-                            //move reset menu off screen
-                            reset?.run(SKAction.move(to: CGPoint(x:0,y:500), duration: 1), completion: {
-                                //restarting scores
-                                self.score = 0
-                                self.currentLevel = 0
-                                //clearing all red and blue nodes on screen
-                                for child in self.gameScene.rootNode.childNodes{
-                                    if(child.geometry?.name == "RED" || child.geometry?.name == "BLUE" ){
-                                        child.removeFromParentNode()
-                                    }
+                    reset?.run(SKAction.move(to: CGPoint(x:0,y:0), duration: 1))
+                    //reset button action
+                    resetButton?.playAction = {
+                        //move reset menu off screen
+                        reset?.run(SKAction.move(to: CGPoint(x:0,y:500), duration: 1), completion: {
+                            //clearing all red and blue nodes on screen
+                            for child in self.gameScene.rootNode.childNodes{
+                                if(child.geometry?.name == "RED" || child.geometry?.name == "BLUE" ){
+                                    child.removeFromParentNode()
                                 }
-                                //reseting game state
-                                self.state =  .isLaunched
-                            })
-                        }
-                        //exit button action
-                        exitButton?.playAction = {
-                            //move to menu view controller
-                            let newRootViewController = self.view?.window?.rootViewController!.storyboard!.instantiateViewController(withIdentifier: "MenuViewController")
-                            UIApplication.shared.keyWindow!.replaceRootViewControllerWith(newRootViewController!, animated: true, completion: nil)
-                        }
-                        //highscore button action
-                        highscoreButton?.playAction = {
-                            //transit from game to highscore view
-                            let newRootViewController = self.view?.window?.rootViewController!.storyboard!.instantiateViewController(withIdentifier: "HighscoreViewController")
-                            UIApplication.shared.keyWindow!.replaceRootViewControllerWith(newRootViewController!, animated: true, completion: nil)
-                        }
-                        
-                    })
+                            }
+                            //restarting scores, vars
+                            self.score = 0
+                            self.currentLevel = 0
+                            self.gameScene.physicsWorld.gravity = self.initialGravity
+                            self.spawnLimit = 1
+                            
+                            //reseting game state
+                            self.state =  .isLaunched
+                        })
+                    }
+                    //exit button action
+                    exitButton?.playAction = {
+                        //move to menu view controller
+                        let newRootViewController = self.view?.window?.rootViewController!.storyboard!.instantiateViewController(withIdentifier: "MenuViewController")
+                        UIApplication.shared.keyWindow!.replaceRootViewControllerWith(newRootViewController!, animated: true, completion: nil)
+                    }
+                    //highscore button action
+                    highscoreButton?.playAction = {
+                        //transit from game to highscore view
+                        let newRootViewController = self.view?.window?.rootViewController!.storyboard!.instantiateViewController(withIdentifier: "HighscoreViewController")
+                        UIApplication.shared.keyWindow!.replaceRootViewControllerWith(newRootViewController!, animated: true, completion: nil)
+                    }
+                    
                 })
-                
                 break
             case .isPaused:
                 break
@@ -180,12 +186,12 @@ class GameViewController: UIViewController {
     }
     
     //method that increment level of game
-    func handleLevel(){
+    @objc func handleLevel(){
         currentLevel+=1
     }
     
     //method that spawns in the game objects, linked with a timer
-    func spawnBlocks(){
+    @objc func spawnBlocks(){
         
         // spawning in 1 - limit blocks
         
@@ -319,10 +325,6 @@ class GameViewController: UIViewController {
     
     //handling touches in game
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        // if gameState is launched then transit to play
-        if(state == .isLaunched){
-            state = .isPlaying
-        }
         // if gameState is playing then apply impulse if touched block
         if(state == .isPlaying){
             //hit test
@@ -371,40 +373,45 @@ extension GameViewController : SCNSceneRendererDelegate{
     func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
         //handle despawn / lose / score here
         
-        //Looping through all the nodes current in the gameScene
-        for child in gameScene.rootNode.childNodes{
+        
+        //only handle when gameState is playing
+        
+        if(state == .isPlaying){
             
-            //handle despawn
-            if(child.geometry?.name == "RED" || child.geometry?.name == "BLUE"){
-                //BLUE SECTOR of map
-                if(child.presentation.position.y <= -6 && child.presentation.position.z >= -5){
-                    
-                    //If RED falls in BLUE SECTOR -> LOSE
-                    
-                    if(child.geometry?.name=="RED"){
-                        state = .isEnded
+            //Looping through all the nodes current in the gameScene
+            for child in gameScene.rootNode.childNodes{
+                
+                //handle despawn
+                if(child.geometry?.name == "RED" || child.geometry?.name == "BLUE"){
+                    //BLUE SECTOR of map
+                    if(child.presentation.position.y <= -6 && child.presentation.position.z >= -5){
+                        
+                        //If RED falls in BLUE SECTOR -> LOSE
+                        
+                        if(child.geometry?.name=="RED"){
+                            state = .isEnded
+                        }
+                        
+                        //bottom of camera position
+                        //despawning if any child is less than y -6
+                        child.removeFromParentNode()
+                    }
+                    //RED SECTOR of map
+                    if(child.presentation.position.y <= -50 && child.presentation.position.z <= -30){
+                        
+                        //If BLUE falls in RED SECTOR -> LOSE
+                        
+                        if(child.geometry?.name=="BLUE"){
+                            state = .isEnded
+                        }
+                        //bottom of camera position
+                        //despawning if any child is less than y -50
+                        child.removeFromParentNode()
                     }
                     
-                    //bottom of camera position
-                    //despawning if any child is less than y -6
-                    child.removeFromParentNode()
-                }
-                //RED SECTOR of map
-                if(child.presentation.position.y <= -50 && child.presentation.position.z <= -30){
-                    
-                    //If BLUE falls in RED SECTOR -> LOSE
-                    
-                    if(child.geometry?.name=="BLUE"){
-                        state = .isEnded
-                    }
-                    //bottom of camera position
-                    //despawning if any child is less than y -50
-                    child.removeFromParentNode()
                 }
                 
             }
-            
-            
             
             
         }
